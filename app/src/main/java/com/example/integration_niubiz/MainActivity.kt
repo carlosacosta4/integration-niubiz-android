@@ -15,7 +15,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import com.example.integration_niubiz.Providers.Visanet
-
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 
 
 class MainActivity : AppCompatActivity() {
@@ -75,17 +76,22 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == VisaNet.VISANET_AUTHORIZATION) {
             if (data != null) {
+                val gson = GsonBuilder().setPrettyPrinting().create()
                 if (resultCode == RESULT_OK) {
                     disableComponents()
                     val JSONString = data.extras!!.getString("keySuccess")
-                    val toast1 = Toast.makeText(applicationContext, JSONString, Toast.LENGTH_LONG)
+                    val jsonElement = JsonParser.parseString(JSONString)
+                    Log.d("Success JSON", gson.toJson(jsonElement)) // Imprime el JSON de éxito
+                    val toast1 = Toast.makeText(applicationContext, "¡Pago exitoso!", Toast.LENGTH_LONG)
                     toast1.show()
 
                 } else {
                     disableComponents()
                     var JSONString = data.extras!!.getString("keyError")
                     JSONString = JSONString ?: ""
-                    val toast1 = Toast.makeText(applicationContext, JSONString, Toast.LENGTH_LONG)
+                    val jsonElement = JsonParser.parseString(JSONString)
+                    Log.d("Error JSON", gson.toJson(jsonElement)) // Imprime el JSON de error
+                    val toast1 = Toast.makeText(applicationContext, "Error al procesar el pago", Toast.LENGTH_LONG)
                     toast1.show()
                 }
             } else {
